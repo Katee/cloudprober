@@ -1,4 +1,4 @@
-baseURL = "https://cloudprober.org/"
+baseURL = "https://katee.github.io/cloudprober/"
 languageCode = "en-us"
 title = "Cloudprober"
 theme = "hugo-material-docs"
@@ -9,7 +9,7 @@ canonifyURLs = true
 
 [params]
   provider = "GitHub"
-  repo_url = "https://github.com/google/cloudprober"
+  repo_url = "https://github.com/Katee/cloudprober"
 
 
 
