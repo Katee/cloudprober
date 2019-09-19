@@ -289,18 +289,18 @@ this probe-type provides a way to test redis server functionality and it takes
 the following options - operation (GET vs SET vs DELETE), key, value. This
 probe&rsquo;s configuration looks like this:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">probe {<span style="color:#f00">
-</span><span style="color:#f00"></span>  name: <span style="color:#0ff;font-weight:bold">&#34;redis_set&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  type: EXTENSION<span style="color:#f00">
-</span><span style="color:#f00"></span>  targets {<span style="color:#f00">
-</span><span style="color:#f00"></span>    host_names: <span style="color:#0ff;font-weight:bold">&#34;localhost:6379&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  }<span style="color:#f00">
-</span><span style="color:#f00"></span>  redis_probe {<span style="color:#f00">
-</span><span style="color:#f00"></span>    op: <span style="color:#0ff;font-weight:bold">&#34;set&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    key: <span style="color:#0ff;font-weight:bold">&#34;testkey&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    value: <span style="color:#0ff;font-weight:bold">&#34;testval&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  }<span style="color:#f00">
-</span><span style="color:#f00"></span>}</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="n">probe</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="n">name</span><span class="o">:</span> <span class="s">&#34;redis_set&#34;</span><span class="err">
+</span><span class="err"></span>  <span class="n">type</span><span class="o">:</span> <span class="n">EXTENSION</span><span class="err">
+</span><span class="err"></span>  <span class="n">targets</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>    <span class="n">host_names</span><span class="o">:</span> <span class="s">&#34;localhost:6379&#34;</span><span class="err">
+</span><span class="err"></span>  <span class="p">}</span><span class="err">
+</span><span class="err"></span>  <span class="n">redis_probe</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>    <span class="n">op</span><span class="o">:</span> <span class="s">&#34;set&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="n">key</span><span class="o">:</span> <span class="s">&#34;testkey&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="n">value</span><span class="o">:</span> <span class="s">&#34;testval&#34;</span><span class="err">
+</span><span class="err"></span>  <span class="p">}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span></code></pre></div>
 
 <p>To make cloudprober understand this config, we&rsquo;ll have to do a few things:</p>
 
@@ -318,31 +318,31 @@ be embedded directly into the top-level binary.</p></li>
 
 <p>Let&rsquo;s create a new directory for our code: <code>$GOPATH/src/myprober</code>.</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#007f7f">// File: $GOPATH/src/myprober/myprobe/myprobe.proto
-</span><span style="color:#007f7f"></span><span style="color:#f00">
-</span><span style="color:#f00"></span>syntax = <span style="color:#0ff;font-weight:bold">&#34;proto2&#34;</span>;<span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span><span style="color:#fff;font-weight:bold">import</span> <span style="color:#0ff;font-weight:bold">&#34;github.com/google/cloudprober/probes/proto/config.proto&#34;</span>;<span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span><span style="color:#fff;font-weight:bold">package</span> myprober;<span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span><span style="color:#fff;font-weight:bold">message</span> ProbeConf {<span style="color:#f00">
-</span><span style="color:#f00"></span>  <span style="color:#007f7f">// Redis operation
-</span><span style="color:#007f7f"></span>  <span style="color:#fff;font-weight:bold">required</span> <span style="color:#fff;font-weight:bold">string</span> op = <span style="color:#ff0;font-weight:bold">1</span>;<span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  <span style="color:#007f7f">// Key and value for the redis operation
-</span><span style="color:#007f7f"></span>  <span style="color:#fff;font-weight:bold">required</span> <span style="color:#fff;font-weight:bold">string</span> key = <span style="color:#ff0;font-weight:bold">2</span>;<span style="color:#f00">
-</span><span style="color:#f00"></span>  <span style="color:#fff;font-weight:bold">optional</span> <span style="color:#fff;font-weight:bold">string</span> value = <span style="color:#ff0;font-weight:bold">3</span>;<span style="color:#f00">
-</span><span style="color:#f00"></span>}<span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span><span style="color:#fff;font-weight:bold">extend</span> cloudprober.probes.ProbeDef {<span style="color:#f00">
-</span><span style="color:#f00"></span>  <span style="color:#fff;font-weight:bold">optional</span> ProbeConf redis_probe = <span style="color:#ff0;font-weight:bold">200</span>;<span style="color:#f00">
-</span><span style="color:#f00"></span>}</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="c1">// File: $GOPATH/src/myprober/myprobe/myprobe.proto
+</span><span class="c1"></span><span class="err">
+</span><span class="err"></span><span class="n">syntax</span> <span class="o">=</span> <span class="s">&#34;proto2&#34;</span><span class="p">;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">import</span> <span class="s">&#34;github.com/google/cloudprober/probes/proto/config.proto&#34;</span><span class="p">;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="kn">package</span> <span class="nn">myprober</span><span class="p">;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="kd">message</span> <span class="nc">ProbeConf</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Redis operation
+</span><span class="c1"></span>  <span class="k">required</span> <span class="kt">string</span> <span class="n">op</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span>  <span class="c1">// Key and value for the redis operation
+</span><span class="c1"></span>  <span class="k">required</span> <span class="kt">string</span> <span class="n">key</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span><span class="err">
+</span><span class="err"></span>  <span class="k">optional</span> <span class="kt">string</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span><span class="err">
+</span><span class="err"></span><span class="p">}</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="kd">extend</span> <span class="nc">cloudprober</span><span class="o">.</span><span class="n">probes.ProbeDef</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="k">optional</span> <span class="n">ProbeConf</span> <span class="n">redis_probe</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span><span class="err">
+</span><span class="err"></span><span class="p">}</span></code></pre></div>
 
 <p>Let&rsquo;s generate Go code for this protobuf:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#007f7f"># From the myprober directory</span>
-protoc --go_out=.,import_path=myprobe:. --proto_path=$GOPATH/src:. myprobe/*.proto
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># From the myprober directory</span>
+protoc --go_out<span class="o">=</span>.,import_path<span class="o">=</span>myprobe:. --proto_path<span class="o">=</span><span class="nv">$GOPATH</span>/src:. myprobe/*.proto
 
 $ ls myprobe/
 myprobe.pb.go  myprobe.proto</code></pre></div>
@@ -352,73 +352,73 @@ myprobe.pb.go  myprobe.proto</code></pre></div>
 <p>Now let&rsquo;s implement our probe type. Our probe type should implement the
 <a href="https://godoc.org/github.com/google/cloudprober/probes#Probe">probes.Probe</a> interface.</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> myprobe
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">myprobe</span>
 
-<span style="color:#007f7f">// Probe holds aggregate information about all probe runs, per-target.
-</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">type</span> Probe <span style="color:#fff;font-weight:bold">struct</span> {
-  name    <span style="color:#fff;font-weight:bold">string</span>
-  c       *configpb.ProbeConf
-  targets []<span style="color:#fff;font-weight:bold">string</span>
-  opts    *options.Options
-  ...
-}
+<span class="c1">// Probe holds aggregate information about all probe runs, per-target.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Probe</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">name</span>    <span class="kt">string</span>
+  <span class="nx">c</span>       <span class="o">*</span><span class="nx">configpb</span><span class="p">.</span><span class="nx">ProbeConf</span>
+  <span class="nx">targets</span> <span class="p">[]</span><span class="kt">string</span>
+  <span class="nx">opts</span>    <span class="o">*</span><span class="nx">options</span><span class="p">.</span><span class="nx">Options</span>
+  <span class="o">...</span>
+<span class="p">}</span>
 
-<span style="color:#007f7f">// Init initializes the probe with the given params.
-</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (p *Probe) Init(name <span style="color:#fff;font-weight:bold">string</span>, opts *options.Options) <span style="color:#fff;font-weight:bold">error</span> {
-  c, ok := opts.ProbeConf.(*ProbeConf)
-  <span style="color:#fff;font-weight:bold">if</span> !ok {
-    <span style="color:#fff;font-weight:bold">return</span> fmt.Errorf(<span style="color:#0ff;font-weight:bold">&#34;not a my probe config&#34;</span>)
-  }
-  <span style="color:#007f7f">// initialize p fields, p.name = name, etc.
-</span><span style="color:#007f7f"></span>}
+<span class="c1">// Init initializes the probe with the given params.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Probe</span><span class="p">)</span> <span class="nf">Init</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">opts</span> <span class="o">*</span><span class="nx">options</span><span class="p">.</span><span class="nx">Options</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="nx">c</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">ProbeConf</span><span class="p">.(</span><span class="o">*</span><span class="nx">ProbeConf</span><span class="p">)</span>
+  <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;not a my probe config&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="c1">// initialize p fields, p.name = name, etc.
+</span><span class="c1"></span><span class="p">}</span>
 
-<span style="color:#007f7f">// Start runs the probe indefinitely, at the configured interval.
-</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (p *Probe) Start(ctx context.Context, dataChan <span style="color:#fff;font-weight:bold">chan</span> *metrics.EventMetrics) {
-  probeTicker := time.NewTicker(p.opts.Interval)
+<span class="c1">// Start runs the probe indefinitely, at the configured interval.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Probe</span><span class="p">)</span> <span class="nf">Start</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">dataChan</span> <span class="kd">chan</span> <span class="o">*</span><span class="nx">metrics</span><span class="p">.</span><span class="nx">EventMetrics</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">probeTicker</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">NewTicker</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">Interval</span><span class="p">)</span>
 
-  <span style="color:#fff;font-weight:bold">for</span> {
-    <span style="color:#fff;font-weight:bold">select</span> {
-    <span style="color:#fff;font-weight:bold">case</span> &lt;-ctx.Done():
-      probeTicker.Stop()
-      <span style="color:#fff;font-weight:bold">return</span>
-    <span style="color:#fff;font-weight:bold">case</span> &lt;-probeTicker.C:
-      <span style="color:#fff;font-weight:bold">for</span> _, em := <span style="color:#fff;font-weight:bold">range</span> p.res {
-        dataChan &lt;- em
-      }
-      p.targets = p.opts.Targets.List()
-      ...
-      probeCtx, cancelFunc := context.WithDeadline(ctx, time.Now().Add(p.opts.Timeout))
-      p.runProbe(probeCtx)
-      cancelFunc()
-    }
-  }
-}
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+      <span class="nx">probeTicker</span><span class="p">.</span><span class="nf">Stop</span><span class="p">()</span>
+      <span class="k">return</span>
+    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">probeTicker</span><span class="p">.</span><span class="nx">C</span><span class="p">:</span>
+      <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">em</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">p</span><span class="p">.</span><span class="nx">res</span> <span class="p">{</span>
+        <span class="nx">dataChan</span> <span class="o">&lt;-</span> <span class="nx">em</span>
+      <span class="p">}</span>
+      <span class="nx">p</span><span class="p">.</span><span class="nx">targets</span> <span class="p">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">Targets</span><span class="p">.</span><span class="nf">List</span><span class="p">()</span>
+      <span class="o">...</span>
+      <span class="nx">probeCtx</span><span class="p">,</span> <span class="nx">cancelFunc</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithDeadline</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">Timeout</span><span class="p">))</span>
+      <span class="nx">p</span><span class="p">.</span><span class="nf">runProbe</span><span class="p">(</span><span class="nx">probeCtx</span><span class="p">)</span>
+      <span class="nf">cancelFunc</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 
-<span style="color:#007f7f">// runProbe runs probe for all targets and update EventMetrics.
-</span><span style="color:#007f7f"></span><span style="color:#fff;font-weight:bold">func</span> (p *Probe) runProbe(ctx context.Context) {
-  p.targets = p.opts.Targets.List()
+<span class="c1">// runProbe runs probe for all targets and update EventMetrics.
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Probe</span><span class="p">)</span> <span class="nf">runProbe</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">p</span><span class="p">.</span><span class="nx">targets</span> <span class="p">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">Targets</span><span class="p">.</span><span class="nf">List</span><span class="p">()</span>
 
-  <span style="color:#fff;font-weight:bold">var</span> wg sync.WaitGroup
-  <span style="color:#fff;font-weight:bold">for</span> _, target := <span style="color:#fff;font-weight:bold">range</span> p.targets {
-    wg.Add(<span style="color:#ff0;font-weight:bold">1</span>)
+  <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+  <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">target</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">p</span><span class="p">.</span><span class="nx">targets</span> <span class="p">{</span>
+    <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span style="color:#fff;font-weight:bold">go</span> <span style="color:#fff;font-weight:bold">func</span>(target <span style="color:#fff;font-weight:bold">string</span>, em *metrics.EventMetrics) {
-      <span style="color:#fff;font-weight:bold">defer</span> wg.Done()
-      em.Metric(<span style="color:#0ff;font-weight:bold">&#34;total&#34;</span>).AddInt64(<span style="color:#ff0;font-weight:bold">1</span>)
-      start := time.Now()
-      err := p.runProbeForTarget(ctx, target) <span style="color:#007f7f">// run probe just for a single target
-</span><span style="color:#007f7f"></span>      <span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
-        p.l.Errorf(err.Error())
-        <span style="color:#fff;font-weight:bold">return</span>
-      }
-      em.Metric(<span style="color:#0ff;font-weight:bold">&#34;success&#34;</span>).AddInt64(<span style="color:#ff0;font-weight:bold">1</span>)
-      em.Metric(<span style="color:#0ff;font-weight:bold">&#34;latency&#34;</span>).AddFloat64(time.Now().Sub(start).Seconds() / p.opts.LatencyUnit.Seconds())
-    }(target, p.res[target])
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">target</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">em</span> <span class="o">*</span><span class="nx">metrics</span><span class="p">.</span><span class="nx">EventMetrics</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+      <span class="nx">em</span><span class="p">.</span><span class="nf">Metric</span><span class="p">(</span><span class="s">&#34;total&#34;</span><span class="p">).</span><span class="nf">AddInt64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+      <span class="nx">start</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+      <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nf">runProbeForTarget</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">target</span><span class="p">)</span> <span class="c1">// run probe just for a single target
+</span><span class="c1"></span>      <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">p</span><span class="p">.</span><span class="nx">l</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+        <span class="k">return</span>
+      <span class="p">}</span>
+      <span class="nx">em</span><span class="p">.</span><span class="nf">Metric</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">).</span><span class="nf">AddInt64</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+      <span class="nx">em</span><span class="p">.</span><span class="nf">Metric</span><span class="p">(</span><span class="s">&#34;latency&#34;</span><span class="p">).</span><span class="nf">AddFloat64</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">Sub</span><span class="p">(</span><span class="nx">start</span><span class="p">).</span><span class="nf">Seconds</span><span class="p">()</span> <span class="o">/</span> <span class="nx">p</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">LatencyUnit</span><span class="p">.</span><span class="nf">Seconds</span><span class="p">())</span>
+    <span class="p">}(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">res</span><span class="p">[</span><span class="nx">target</span><span class="p">])</span>
 
-  }
+  <span class="p">}</span>
 
-  wg.Wait()
-}</code></pre></div>
+  <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+<span class="p">}</span></code></pre></div>
 
 <p>Full example in
 <a href="https://github.com/google/cloudprober/blob/master/examples/extensions/myprober/myprobe/myprobe.go">examples/extensions/myprober/myprobe/myprobe.go</a>.</p>
@@ -428,61 +428,61 @@ redis and records success and time taken (latency) if operation is successful.</
 
 <h2 id="implement-a-cloudprober-binary-that-includes-support-for-our-probe">Implement a cloudprober binary that includes support for our probe</h2>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">package</span> main
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
-...
+<span class="o">...</span>
 
-<span style="color:#fff;font-weight:bold">func</span> main() {
-  flag.Parse()
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
 
-  <span style="color:#007f7f">// Register our probe type
-</span><span style="color:#007f7f"></span>  probes.RegisterProbeType(<span style="color:#fff;font-weight:bold">int</span>(myprobe.E_RedisProbe.Field),
-                           <span style="color:#fff;font-weight:bold">func</span>() probes.Probe { <span style="color:#fff;font-weight:bold">return</span> &amp;myprobe.Probe{} })
+  <span class="c1">// Register our probe type
+</span><span class="c1"></span>  <span class="nx">probes</span><span class="p">.</span><span class="nf">RegisterProbeType</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nx">myprobe</span><span class="p">.</span><span class="nx">E_RedisProbe</span><span class="p">.</span><span class="nx">Field</span><span class="p">),</span>
+                           <span class="kd">func</span><span class="p">()</span> <span class="nx">probes</span><span class="p">.</span><span class="nx">Probe</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="nx">myprobe</span><span class="p">.</span><span class="nx">Probe</span><span class="p">{}</span> <span class="p">})</span>
 
-  err := cloudprober.InitFromConfig(getConfig()) <span style="color:#007f7f">// getConfig not shown here.
-</span><span style="color:#007f7f"></span>  <span style="color:#fff;font-weight:bold">if</span> err != <span style="color:#fff;font-weight:bold">nil</span> {
-    glog.Exitf(<span style="color:#0ff;font-weight:bold">&#34;Error initializing cloudprober. Err: %v&#34;</span>, err)
-  }
+  <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cloudprober</span><span class="p">.</span><span class="nf">InitFromConfig</span><span class="p">(</span><span class="nf">getConfig</span><span class="p">())</span> <span class="c1">// getConfig not shown here.
+</span><span class="c1"></span>  <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">glog</span><span class="p">.</span><span class="nf">Exitf</span><span class="p">(</span><span class="s">&#34;Error initializing cloudprober. Err: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+  <span class="p">}</span>
 
-  <span style="color:#007f7f">// web.Init sets up web UI for cloudprober.
-</span><span style="color:#007f7f"></span>  web.Init()
+  <span class="c1">// web.Init sets up web UI for cloudprober.
+</span><span class="c1"></span>  <span class="nx">web</span><span class="p">.</span><span class="nf">Init</span><span class="p">()</span>
 
-  cloudprober.Start(context.Background())
+  <span class="nx">cloudprober</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">())</span>
 
-  <span style="color:#007f7f">// Wait forever
-</span><span style="color:#007f7f"></span>  <span style="color:#fff;font-weight:bold">select</span> {}
-}</code></pre></div>
+  <span class="c1">// Wait forever
+</span><span class="c1"></span>  <span class="k">select</span> <span class="p">{}</span>
+<span class="p">}</span></code></pre></div>
 
 <p>Full example in
 <a href="https://github.com/google/cloudprober/blob/master/examples/extensions/myprober/myprober.go">examples/extensions/myprober/myprober.go</a>.</p>
 
 <p>Let&rsquo;s write a test config that uses the newly defined probe type:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">probe {
-  name: <span style="color:#0ff;font-weight:bold">&#34;redis_set&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">probe <span class="o">{</span>
+  name: <span class="s2">&#34;redis_set&#34;</span>
   type: EXTENSION
-  interval_msec: <span style="color:#ff0;font-weight:bold">10000</span>
-  timeout_msec: <span style="color:#ff0;font-weight:bold">5000</span>
-  targets {
-    host_names: <span style="color:#0ff;font-weight:bold">&#34;localhost:6379&#34;</span>
-  }
-  [myprober.redis_probe] {
-    op: <span style="color:#0ff;font-weight:bold">&#34;set&#34;</span>
-    key: <span style="color:#0ff;font-weight:bold">&#34;testkey&#34;</span>
-    value: <span style="color:#0ff;font-weight:bold">&#34;testval&#34;</span>
-  }
-}</code></pre></div>
+  interval_msec: <span class="m">10000</span>
+  timeout_msec: <span class="m">5000</span>
+  targets <span class="o">{</span>
+    host_names: <span class="s2">&#34;localhost:6379&#34;</span>
+  <span class="o">}</span>
+  <span class="o">[</span>myprober.redis_probe<span class="o">]</span> <span class="o">{</span>
+    op: <span class="s2">&#34;set&#34;</span>
+    key: <span class="s2">&#34;testkey&#34;</span>
+    value: <span class="s2">&#34;testval&#34;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
 
 <p>Full example in
 <a href="https://github.com/google/cloudprober/blob/master/examples/extensions/myprober/myprober.cfg">examples/extensions/myprober/myprober.cfg</a>.</p>
 
 <p>Let&rsquo;s compile our prober and run it with the above config:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go build ./myprober.go
-./myprober --config_file=myprober.cfg</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">go build ./myprober.go
+./myprober --config_file<span class="o">=</span>myprober.cfg</code></pre></div>
 
 <p>you should see an output like the following:
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cloudprober 1540848577649139842 1540848587 labels=ptype=redis,probe=redis_set,dst=localhost:6379 total=31 success=31 latency=70579.823
+<div class="highlight"><pre class="chroma"><code class="language-text" data-lang="text">cloudprober 1540848577649139842 1540848587 labels=ptype=redis,probe=redis_set,dst=localhost:6379 total=31 success=31 latency=70579.823
 cloudprober 1540848577649139843 1540848887 labels=ptype=sysvars,probe=sysvars hostname=&#34;manugarg-macbookpro5.roam.corp.google.com&#34; start_timestamp=&#34;1540848577&#34;
 cloudprober 1540848577649139844 1540848887 labels=ptype=sysvars,probe=sysvars uptime_msec=310007.784 gc_time_msec=0.000 mallocs=14504 frees=826
 cloudprober 1540848577649139845 1540848887 labels=ptype=sysvars,probe=sysvars goroutines=12 mem_stats_sys_bytes=7211256
@@ -609,9 +609,6 @@ data can be multiple systems simultaneously, etc.</p>
         });
       </script>
     
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
   </body>
 </html>
 
