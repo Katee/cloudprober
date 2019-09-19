@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>External Probe - Cloudprober</title>
-    <meta name="generator" content="Hugo 0.48" />
+    <meta name="generator" content="Hugo 0.54.0" />
 
     
     <link rel="canonical" href="https://cloudprober.org/how-to/external-probe/">
@@ -282,20 +282,18 @@ and time elapsed in execution. Cloudprober also allows external programs to prov
 <p>To understand how it works, lets create a sample probe that sets and gets a key
 in a redis server. Here is the <code>main</code> function of such a probe:</p>
 
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><code class="language-go" data-lang="go"><span></span><span style="color: #008000; font-weight: bold">func</span> main() {
-	<span style="color: #008000; font-weight: bold">var</span> client redis.Client
-	<span style="color: #008000; font-weight: bold">var</span> key = <span style="color: #BA2121">&quot;hello&quot;</span>
-	startTime <span style="color: #666666">:=</span> time.Now()
-	client.Set(key, []<span style="color: #008000">byte</span>(<span style="color: #BA2121">&quot;world&quot;</span>))
-	fmt.Printf(<span style="color: #BA2121">&quot;set_latency_ms %f\n&quot;</span>, <span style="color: #008000">float64</span>(time.Since(startTime).Nanoseconds())<span style="color: #666666">/1e6</span>)
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">func</span> main() {
+    <span style="color:#fff;font-weight:bold">var</span> client redis.Client
+    <span style="color:#fff;font-weight:bold">var</span> key = <span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>
+    startTime := time.Now()
+    client.Set(key, []<span style="color:#fff;font-weight:bold">byte</span>(<span style="color:#0ff;font-weight:bold">&#34;world&#34;</span>))
+    fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;set_latency_ms %f\n&#34;</span>, <span style="color:#fff;font-weight:bold">float64</span>(time.Since(startTime).Nanoseconds())/<span style="color:#ff0;font-weight:bold">1e6</span>)
 
-	startTime = time.Now()
-	val, _ <span style="color: #666666">:=</span> client.Get(<span style="color: #BA2121">&quot;hello&quot;</span>)
-	log.Printf(<span style="color: #BA2121">&quot;%s=%s&quot;</span>, key, <span style="color: #008000">string</span>(val))
-	fmt.Printf(<span style="color: #BA2121">&quot;get_latency_ms %f\n&quot;</span>, <span style="color: #008000">float64</span>(time.Since(startTime).Nanoseconds())<span style="color: #666666">/1e6</span>)
-}
-</code></pre></div>
-
+    startTime = time.Now()
+    val, _ := client.Get(<span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>)
+    log.Printf(<span style="color:#0ff;font-weight:bold">&#34;%s=%s&#34;</span>, key, <span style="color:#fff;font-weight:bold">string</span>(val))
+    fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;get_latency_ms %f\n&#34;</span>, <span style="color:#fff;font-weight:bold">float64</span>(time.Since(startTime).Nanoseconds())/<span style="color:#ff0;font-weight:bold">1e6</span>)
+}</code></pre></div>
 
 <p>(Full listing: <a href="https://github.com/google/cloudprober/blob/master/examples/external/redis_probe.go">https://github.com/google/cloudprober/blob/master/examples/external/redis_probe.go</a>)</p>
 
@@ -303,53 +301,47 @@ in a redis server. Here is the <code>main</code> function of such a probe:</p>
 the availability and performance of the redis server. This program assumes that
 redis server is running locally, at its default port. For the sake of demonstration, lets run a local redis server (you can also easily modify this program to use a different server.)</p>
 
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><code class="language-bash" data-lang="bash"><span></span><span style="color: #408080; font-style: italic">#!bash</span>
-brew install redis
-</code></pre></div>
-
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0f0;font-weight:bold">#!bash
+</span><span style="color:#0f0;font-weight:bold"></span>brew install redis</code></pre></div>
 
 <p>Let&rsquo;s compile our probe program (redis_probe.go) and verify that it&rsquo;s working
 as expected:</p>
 
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><code class="language-bash" data-lang="bash"><span></span><span style="color: #408080; font-style: italic">#!bash</span>
-go build ./redis_probe.go
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0f0;font-weight:bold">#!bash
+</span><span style="color:#0f0;font-weight:bold"></span>go build ./redis_probe.go
 ./redis_probe
-set_latency_ms <span style="color: #666666">22</span>.656588
-<span style="color: #666666">2018</span>/02/26 <span style="color: #666666">15</span>:16:14 <span style="color: #19177C">hello</span><span style="color: #666666">=</span>world
-get_latency_ms <span style="color: #666666">2</span>.173560
-</code></pre></div>
-
+set_latency_ms <span style="color:#ff0;font-weight:bold">22</span>.656588
+<span style="color:#ff0;font-weight:bold">2018</span>/02/26 <span style="color:#ff0;font-weight:bold">15</span>:16:14 hello=world
+get_latency_ms <span style="color:#ff0;font-weight:bold">2</span>.173560</code></pre></div>
 
 <h2 id="configuration">Configuration</h2>
 
 <p>Here is the external probe configuration that makes use of this program:</p>
 
-<p>(Full listing: <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober.cfg">https://github.com/google/cloudprober/blob/master/examples/external/cloudprober.cfg</a>)
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><code class="language-bash" data-lang="bash"><span></span><span style="color: #408080; font-style: italic"># Run an external probe that executes a command from the current working</span>
-<span style="color: #408080; font-style: italic"># directory.</span>
-probe <span style="color: #666666">{</span>
-  name: <span style="color: #BA2121">&quot;redis_probe&quot;</span>
-  type: EXTERNAL
-  targets <span style="color: #666666">{</span> dummy_targets <span style="color: #666666">{}</span> <span style="color: #666666">}</span>
-  external_probe <span style="color: #666666">{</span>
-    mode: ONCE
-    command: <span style="color: #BA2121">&quot;./redis_probe&quot;</span>
-  <span style="color: #666666">}</span>
-<span style="color: #666666">}</span>
-</code></pre></div>
-</p>
+<p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober.cfg">examples/external/cloudprober.cfg</a>.</p>
+
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#f00">#</span> Run an external probe that executes a command from the current working<span style="color:#f00">
+</span><span style="color:#f00">#</span> directory.<span style="color:#f00">
+</span><span style="color:#f00"></span>probe {<span style="color:#f00">
+</span><span style="color:#f00"></span>  name: <span style="color:#0ff;font-weight:bold">&#34;redis_probe&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>  type: EXTERNAL<span style="color:#f00">
+</span><span style="color:#f00"></span>  targets { dummy_targets {} }<span style="color:#f00">
+</span><span style="color:#f00"></span>  external_probe {<span style="color:#f00">
+</span><span style="color:#f00"></span>    mode: ONCE<span style="color:#f00">
+</span><span style="color:#f00"></span>    command: <span style="color:#0ff;font-weight:bold">&#34;./redis_probe&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>  }<span style="color:#f00">
+</span><span style="color:#f00"></span>}</code></pre></div>
 
 <p>Running it through cloudprober, you&rsquo;ll see the following output:</p>
 
-<pre><code># Launch cloudprober
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#007f7f"># Launch cloudprober</span>
 cloudprober --config_file=cloudprober.cfg
 
-cloudprober 1519..0 1519583408 labels=ptype=external,probe=redis_probe,dst= success=1 total=1 latency=12143.765
-cloudprober 1519..1 1519583408 labels=ptype=external,probe=redis_probe,dst= set_latency_ms=0.516 get_latency_ms=0.491
-cloudprober 1519..2 1519583410 labels=ptype=external,probe=redis_probe,dst= success=2 total=2 latency=30585.915
-cloudprober 1519..3 1519583410 labels=ptype=external,probe=redis_probe,dst= set_latency_ms=0.636 get_latency_ms=0.994
-cloudprober 1519..4 1519583412 labels=ptype=external,probe=redis_probe,dst= success=3 total=3 latency=42621.871
-</code></pre>
+cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..0 <span style="color:#ff0;font-weight:bold">1519583408</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">1</span> total=<span style="color:#ff0;font-weight:bold">1</span> latency=<span style="color:#ff0;font-weight:bold">12143</span>.765
+cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..1 <span style="color:#ff0;font-weight:bold">1519583408</span> labels=ptype=external,probe=redis_probe,dst= set_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.516 get_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.491
+cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..2 <span style="color:#ff0;font-weight:bold">1519583410</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">2</span> total=<span style="color:#ff0;font-weight:bold">2</span> latency=<span style="color:#ff0;font-weight:bold">30585</span>.915
+cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..3 <span style="color:#ff0;font-weight:bold">1519583410</span> labels=ptype=external,probe=redis_probe,dst= set_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.636 get_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.994
+cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..4 <span style="color:#ff0;font-weight:bold">1519583412</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">3</span> total=<span style="color:#ff0;font-weight:bold">3</span> latency=<span style="color:#ff0;font-weight:bold">42621</span>.871</code></pre></div>
 
 <p>You can import this data in prometheus following the process outlined at:
 <a href="https://cloudprober.org/getting-started/#running-prometheus">Running Prometheus</a>. Before doing that, let&rsquo;s make it more interesting.</p>
@@ -358,29 +350,27 @@ cloudprober 1519..4 1519583412 labels=ptype=external,probe=redis_probe,dst= succ
 
 <p>How nice will it be if we could find distribution of the set and get latency. If tail latency was too high, it could explain the random timeouts in your application. Fortunately, it&rsquo;s very easy to create distributions in Cloudprober. You just need to add the following section to your probe definition:</p>
 
-<p>(Full listing: <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober_aggregate.cfg">https://github.com/google/cloudprober/blob/master/examples/external/cloudprober_aggregate.cfg</a>)</p>
+<p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober_aggregate.cfg">examples/external/cloudprober_aggregate.cfg</a>.</p>
 
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><code class="language-bash" data-lang="bash"><span></span><span style="color: #408080; font-style: italic"># Run an external probe and aggregate metrics in cloudprober.</span>
-    ...
-    output_metrics_options <span style="color: #666666">{</span>
-      aggregate_in_cloudprober: <span style="color: #008000">true</span>
-
-      <span style="color: #408080; font-style: italic"># Create distributions for get_latency_ms and set_latency_ms.</span>
-      dist_metric <span style="color: #666666">{</span>
-        key: <span style="color: #BA2121">&quot;get_latency_ms&quot;</span>
-        value: <span style="color: #666666">{</span>
-          explicit_buckets: <span style="color: #BA2121">&quot;0.1,0.2,0.4,0.6,0.8,1.0,2.0&quot;</span>
-        <span style="color: #666666">}</span>
-      <span style="color: #666666">}</span>
-      dist_metric <span style="color: #666666">{</span>
-        key: <span style="color: #BA2121">&quot;set_latency_ms&quot;</span>
-        value: <span style="color: #666666">{</span>
-          explicit_buckets: <span style="color: #BA2121">&quot;0.1,0.2,0.4,0.6,0.8,1.0,2.0&quot;</span>
-        <span style="color: #666666">}</span>
-      <span style="color: #666666">}</span>
-    <span style="color: #666666">}</span>
-</code></pre></div>
-
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#f00">#</span> Run an external probe and aggregate metrics in cloudprober.<span style="color:#f00">
+</span><span style="color:#f00"></span>...<span style="color:#f00">
+</span><span style="color:#f00"></span>output_metrics_options {<span style="color:#f00">
+</span><span style="color:#f00"></span>  aggregate_in_cloudprober: <span style="color:#fff;font-weight:bold">true</span><span style="color:#f00">
+</span><span style="color:#f00">
+</span><span style="color:#f00"></span>  <span style="color:#f00">#</span> Create distributions for get_latency_ms and set_latency_ms.<span style="color:#f00">
+</span><span style="color:#f00"></span>  dist_metric {<span style="color:#f00">
+</span><span style="color:#f00"></span>    key: <span style="color:#0ff;font-weight:bold">&#34;get_latency_ms&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>    value: {<span style="color:#f00">
+</span><span style="color:#f00"></span>      explicit_buckets: <span style="color:#0ff;font-weight:bold">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>    }<span style="color:#f00">
+</span><span style="color:#f00"></span>  }<span style="color:#f00">
+</span><span style="color:#f00"></span>  dist_metric {<span style="color:#f00">
+</span><span style="color:#f00"></span>    key: <span style="color:#0ff;font-weight:bold">&#34;set_latency_ms&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>    value: {<span style="color:#f00">
+</span><span style="color:#f00"></span>      explicit_buckets: <span style="color:#0ff;font-weight:bold">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span style="color:#f00">
+</span><span style="color:#f00"></span>    }<span style="color:#f00">
+</span><span style="color:#f00"></span>  }<span style="color:#f00">
+</span><span style="color:#f00"></span>}</code></pre></div>
 
 <p>This configuration adds options to aggregate the metrics in the cloudprober and configures &ldquo;get_latency_ms&rdquo; and &ldquo;set_latency_ms&rdquo; as distribution metrics with explicit buckets. Cloudprober will now build cumulative distributions using
 for these metrics. We can import this data in Stackdriver or Prometheus and get the percentiles of the &ldquo;get&rdquo; and &ldquo;set&rdquo; latencies. Following screenshot shows the
@@ -392,7 +382,7 @@ grafana dashboard built using these metrics.</p>
 
 <p>The probe that we created above forks out a new <code>redis_probe</code> process for every
 probe cycle. This can get expensive if probe frequency is high and the process is big (e.g. a Java binary). Also, what if you want to keep some state across probes, for example, lets say you want to monitor performance over HTTP/2 where you keep using the same TCP connection for multiple HTTP requests. A new process
-everytime makes keeping state impossible.</p>
+every time makes keeping state impossible.</p>
 
 <p>External probe&rsquo;s server mode provides a way to run the external probe process in daemon mode. Cloudprober communicates with this process over stdout/stdin (connected with OS pipes), using serialized protobuf messages. Cloudprober comes with a serverutils package that makes it easy to build external probe servers in Go.</p>
 
