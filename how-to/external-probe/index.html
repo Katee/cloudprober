@@ -282,18 +282,18 @@ and time elapsed in execution. Cloudprober also allows external programs to prov
 <p>To understand how it works, lets create a sample probe that sets and gets a key
 in a redis server. Here is the <code>main</code> function of such a probe:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#fff;font-weight:bold">func</span> main() {
-    <span style="color:#fff;font-weight:bold">var</span> client redis.Client
-    <span style="color:#fff;font-weight:bold">var</span> key = <span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>
-    startTime := time.Now()
-    client.Set(key, []<span style="color:#fff;font-weight:bold">byte</span>(<span style="color:#0ff;font-weight:bold">&#34;world&#34;</span>))
-    fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;set_latency_ms %f\n&#34;</span>, <span style="color:#fff;font-weight:bold">float64</span>(time.Since(startTime).Nanoseconds())/<span style="color:#ff0;font-weight:bold">1e6</span>)
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">client</span> <span class="nx">redis</span><span class="p">.</span><span class="nx">Client</span>
+    <span class="kd">var</span> <span class="nx">key</span> <span class="p">=</span> <span class="s">&#34;hello&#34;</span>
+    <span class="nx">startTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;world&#34;</span><span class="p">))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;set_latency_ms %f\n&#34;</span><span class="p">,</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">startTime</span><span class="p">).</span><span class="nf">Nanoseconds</span><span class="p">())</span><span class="o">/</span><span class="mf">1e6</span><span class="p">)</span>
 
-    startTime = time.Now()
-    val, _ := client.Get(<span style="color:#0ff;font-weight:bold">&#34;hello&#34;</span>)
-    log.Printf(<span style="color:#0ff;font-weight:bold">&#34;%s=%s&#34;</span>, key, <span style="color:#fff;font-weight:bold">string</span>(val))
-    fmt.Printf(<span style="color:#0ff;font-weight:bold">&#34;get_latency_ms %f\n&#34;</span>, <span style="color:#fff;font-weight:bold">float64</span>(time.Since(startTime).Nanoseconds())/<span style="color:#ff0;font-weight:bold">1e6</span>)
-}</code></pre></div>
+    <span class="nx">startTime</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">val</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;hello&#34;</span><span class="p">)</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s=%s&#34;</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">val</span><span class="p">))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;get_latency_ms %f\n&#34;</span><span class="p">,</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Since</span><span class="p">(</span><span class="nx">startTime</span><span class="p">).</span><span class="nf">Nanoseconds</span><span class="p">())</span><span class="o">/</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="p">}</span></code></pre></div>
 
 <p>(Full listing: <a href="https://github.com/google/cloudprober/blob/master/examples/external/redis_probe.go">https://github.com/google/cloudprober/blob/master/examples/external/redis_probe.go</a>)</p>
 
@@ -301,18 +301,18 @@ in a redis server. Here is the <code>main</code> function of such a probe:</p>
 the availability and performance of the redis server. This program assumes that
 redis server is running locally, at its default port. For the sake of demonstration, lets run a local redis server (you can also easily modify this program to use a different server.)</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0f0;font-weight:bold">#!bash
-</span><span style="color:#0f0;font-weight:bold"></span>brew install redis</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!bash
+</span><span class="cp"></span>brew install redis</code></pre></div>
 
 <p>Let&rsquo;s compile our probe program (redis_probe.go) and verify that it&rsquo;s working
 as expected:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#0f0;font-weight:bold">#!bash
-</span><span style="color:#0f0;font-weight:bold"></span>go build ./redis_probe.go
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!bash
+</span><span class="cp"></span>go build ./redis_probe.go
 ./redis_probe
-set_latency_ms <span style="color:#ff0;font-weight:bold">22</span>.656588
-<span style="color:#ff0;font-weight:bold">2018</span>/02/26 <span style="color:#ff0;font-weight:bold">15</span>:16:14 hello=world
-get_latency_ms <span style="color:#ff0;font-weight:bold">2</span>.173560</code></pre></div>
+set_latency_ms <span class="m">22</span>.656588
+<span class="m">2018</span>/02/26 <span class="m">15</span>:16:14 <span class="nv">hello</span><span class="o">=</span>world
+get_latency_ms <span class="m">2</span>.173560</code></pre></div>
 
 <h2 id="configuration">Configuration</h2>
 
@@ -320,28 +320,28 @@ get_latency_ms <span style="color:#ff0;font-weight:bold">2</span>.173560</code><
 
 <p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober.cfg">examples/external/cloudprober.cfg</a>.</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#f00">#</span> Run an external probe that executes a command from the current working<span style="color:#f00">
-</span><span style="color:#f00">#</span> directory.<span style="color:#f00">
-</span><span style="color:#f00"></span>probe {<span style="color:#f00">
-</span><span style="color:#f00"></span>  name: <span style="color:#0ff;font-weight:bold">&#34;redis_probe&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  type: EXTERNAL<span style="color:#f00">
-</span><span style="color:#f00"></span>  targets { dummy_targets {} }<span style="color:#f00">
-</span><span style="color:#f00"></span>  external_probe {<span style="color:#f00">
-</span><span style="color:#f00"></span>    mode: ONCE<span style="color:#f00">
-</span><span style="color:#f00"></span>    command: <span style="color:#0ff;font-weight:bold">&#34;./redis_probe&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  }<span style="color:#f00">
-</span><span style="color:#f00"></span>}</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="err">#</span> <span class="n">Run</span> <span class="n">an</span> <span class="n">external</span> <span class="n">probe</span> <span class="n">that</span> <span class="n">executes</span> <span class="n">a</span> <span class="n">command</span> <span class="n">from</span> <span class="n">the</span> <span class="n">current</span> <span class="n">working</span><span class="err">
+</span><span class="err">#</span> <span class="n">directory.</span><span class="err">
+</span><span class="err"></span><span class="n">probe</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="n">name</span><span class="o">:</span> <span class="s">&#34;redis_probe&#34;</span><span class="err">
+</span><span class="err"></span>  <span class="n">type</span><span class="o">:</span> <span class="n">EXTERNAL</span><span class="err">
+</span><span class="err"></span>  <span class="n">targets</span> <span class="p">{</span> <span class="n">dummy_targets</span> <span class="p">{}</span> <span class="p">}</span><span class="err">
+</span><span class="err"></span>  <span class="n">external_probe</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>    <span class="n">mode</span><span class="o">:</span> <span class="n">ONCE</span><span class="err">
+</span><span class="err"></span>    <span class="n">command</span><span class="o">:</span> <span class="s">&#34;./redis_probe&#34;</span><span class="err">
+</span><span class="err"></span>  <span class="p">}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span></code></pre></div>
 
 <p>Running it through cloudprober, you&rsquo;ll see the following output:</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#007f7f"># Launch cloudprober</span>
-cloudprober --config_file=cloudprober.cfg
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># Launch cloudprober</span>
+cloudprober --config_file<span class="o">=</span>cloudprober.cfg
 
-cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..0 <span style="color:#ff0;font-weight:bold">1519583408</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">1</span> total=<span style="color:#ff0;font-weight:bold">1</span> latency=<span style="color:#ff0;font-weight:bold">12143</span>.765
-cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..1 <span style="color:#ff0;font-weight:bold">1519583408</span> labels=ptype=external,probe=redis_probe,dst= set_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.516 get_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.491
-cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..2 <span style="color:#ff0;font-weight:bold">1519583410</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">2</span> total=<span style="color:#ff0;font-weight:bold">2</span> latency=<span style="color:#ff0;font-weight:bold">30585</span>.915
-cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..3 <span style="color:#ff0;font-weight:bold">1519583410</span> labels=ptype=external,probe=redis_probe,dst= set_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.636 get_latency_ms=<span style="color:#ff0;font-weight:bold">0</span>.994
-cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..4 <span style="color:#ff0;font-weight:bold">1519583412</span> labels=ptype=external,probe=redis_probe,dst= success=<span style="color:#ff0;font-weight:bold">3</span> total=<span style="color:#ff0;font-weight:bold">3</span> latency=<span style="color:#ff0;font-weight:bold">42621</span>.871</code></pre></div>
+cloudprober <span class="m">1519</span>..0 <span class="m">1519583408</span> <span class="nv">labels</span><span class="o">=</span><span class="nv">ptype</span><span class="o">=</span>external,probe<span class="o">=</span>redis_probe,dst<span class="o">=</span> <span class="nv">success</span><span class="o">=</span><span class="m">1</span> <span class="nv">total</span><span class="o">=</span><span class="m">1</span> <span class="nv">latency</span><span class="o">=</span><span class="m">12143</span>.765
+cloudprober <span class="m">1519</span>..1 <span class="m">1519583408</span> <span class="nv">labels</span><span class="o">=</span><span class="nv">ptype</span><span class="o">=</span>external,probe<span class="o">=</span>redis_probe,dst<span class="o">=</span> <span class="nv">set_latency_ms</span><span class="o">=</span><span class="m">0</span>.516 <span class="nv">get_latency_ms</span><span class="o">=</span><span class="m">0</span>.491
+cloudprober <span class="m">1519</span>..2 <span class="m">1519583410</span> <span class="nv">labels</span><span class="o">=</span><span class="nv">ptype</span><span class="o">=</span>external,probe<span class="o">=</span>redis_probe,dst<span class="o">=</span> <span class="nv">success</span><span class="o">=</span><span class="m">2</span> <span class="nv">total</span><span class="o">=</span><span class="m">2</span> <span class="nv">latency</span><span class="o">=</span><span class="m">30585</span>.915
+cloudprober <span class="m">1519</span>..3 <span class="m">1519583410</span> <span class="nv">labels</span><span class="o">=</span><span class="nv">ptype</span><span class="o">=</span>external,probe<span class="o">=</span>redis_probe,dst<span class="o">=</span> <span class="nv">set_latency_ms</span><span class="o">=</span><span class="m">0</span>.636 <span class="nv">get_latency_ms</span><span class="o">=</span><span class="m">0</span>.994
+cloudprober <span class="m">1519</span>..4 <span class="m">1519583412</span> <span class="nv">labels</span><span class="o">=</span><span class="nv">ptype</span><span class="o">=</span>external,probe<span class="o">=</span>redis_probe,dst<span class="o">=</span> <span class="nv">success</span><span class="o">=</span><span class="m">3</span> <span class="nv">total</span><span class="o">=</span><span class="m">3</span> <span class="nv">latency</span><span class="o">=</span><span class="m">42621</span>.871</code></pre></div>
 
 <p>You can import this data in prometheus following the process outlined at:
 <a href="https://katee.github.io/cloudprober/getting-started/#running-prometheus">Running Prometheus</a>. Before doing that, let&rsquo;s make it more interesting.</p>
@@ -352,25 +352,25 @@ cloudprober <span style="color:#ff0;font-weight:bold">1519</span>..4 <span style
 
 <p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober_aggregate.cfg">examples/external/cloudprober_aggregate.cfg</a>.</p>
 
-<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#f00">#</span> Run an external probe and aggregate metrics in cloudprober.<span style="color:#f00">
-</span><span style="color:#f00"></span>...<span style="color:#f00">
-</span><span style="color:#f00"></span>output_metrics_options {<span style="color:#f00">
-</span><span style="color:#f00"></span>  aggregate_in_cloudprober: <span style="color:#fff;font-weight:bold">true</span><span style="color:#f00">
-</span><span style="color:#f00">
-</span><span style="color:#f00"></span>  <span style="color:#f00">#</span> Create distributions for get_latency_ms and set_latency_ms.<span style="color:#f00">
-</span><span style="color:#f00"></span>  dist_metric {<span style="color:#f00">
-</span><span style="color:#f00"></span>    key: <span style="color:#0ff;font-weight:bold">&#34;get_latency_ms&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    value: {<span style="color:#f00">
-</span><span style="color:#f00"></span>      explicit_buckets: <span style="color:#0ff;font-weight:bold">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    }<span style="color:#f00">
-</span><span style="color:#f00"></span>  }<span style="color:#f00">
-</span><span style="color:#f00"></span>  dist_metric {<span style="color:#f00">
-</span><span style="color:#f00"></span>    key: <span style="color:#0ff;font-weight:bold">&#34;set_latency_ms&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    value: {<span style="color:#f00">
-</span><span style="color:#f00"></span>      explicit_buckets: <span style="color:#0ff;font-weight:bold">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span style="color:#f00">
-</span><span style="color:#f00"></span>    }<span style="color:#f00">
-</span><span style="color:#f00"></span>  }<span style="color:#f00">
-</span><span style="color:#f00"></span>}</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="err">#</span> <span class="n">Run</span> <span class="n">an</span> <span class="n">external</span> <span class="n">probe</span> <span class="n">and</span> <span class="n">aggregate</span> <span class="n">metrics</span> <span class="n">in</span> <span class="n">cloudprober.</span><span class="err">
+</span><span class="err"></span><span class="o">...</span><span class="err">
+</span><span class="err"></span><span class="n">output_metrics_options</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>  <span class="n">aggregate_in_cloudprober</span><span class="o">:</span> <span class="kc">true</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span>  <span class="err">#</span> <span class="n">Create</span> <span class="n">distributions</span> <span class="n">for</span> <span class="n">get_latency_ms</span> <span class="n">and</span> <span class="n">set_latency_ms.</span><span class="err">
+</span><span class="err"></span>  <span class="n">dist_metric</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>    <span class="n">key</span><span class="o">:</span> <span class="s">&#34;get_latency_ms&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="n">value</span><span class="o">:</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>      <span class="n">explicit_buckets</span><span class="o">:</span> <span class="s">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="p">}</span><span class="err">
+</span><span class="err"></span>  <span class="p">}</span><span class="err">
+</span><span class="err"></span>  <span class="n">dist_metric</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>    <span class="n">key</span><span class="o">:</span> <span class="s">&#34;set_latency_ms&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="n">value</span><span class="o">:</span> <span class="p">{</span><span class="err">
+</span><span class="err"></span>      <span class="n">explicit_buckets</span><span class="o">:</span> <span class="s">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span class="err">
+</span><span class="err"></span>    <span class="p">}</span><span class="err">
+</span><span class="err"></span>  <span class="p">}</span><span class="err">
+</span><span class="err"></span><span class="p">}</span></code></pre></div>
 
 <p>This configuration adds options to aggregate the metrics in the cloudprober and configures &ldquo;get_latency_ms&rdquo; and &ldquo;set_latency_ms&rdquo; as distribution metrics with explicit buckets. Cloudprober will now build cumulative distributions using
 for these metrics. We can import this data in Stackdriver or Prometheus and get the percentiles of the &ldquo;get&rdquo; and &ldquo;set&rdquo; latencies. Following screenshot shows the
