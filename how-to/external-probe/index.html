@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="https://katee.github.io/cloudprober/stylesheets/application.css">
     <link rel="stylesheet" href="https://katee.github.io/cloudprober/stylesheets/temporary.css">
     <link rel="stylesheet" href="https://katee.github.io/cloudprober/stylesheets/palettes.css">
+    <link rel="stylesheet" href="https://katee.github.io/cloudprober/stylesheets/syntax.css">
 
     
     
@@ -319,17 +320,17 @@ get_latency_ms <span class="m">2</span>.173560</code></pre></div>
 
 <p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober.cfg">examples/external/cloudprober.cfg</a>.</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="err">#</span> <span class="n">Run</span> <span class="n">an</span> <span class="n">external</span> <span class="n">probe</span> <span class="n">that</span> <span class="n">executes</span> <span class="n">a</span> <span class="n">command</span> <span class="n">from</span> <span class="n">the</span> <span class="n">current</span> <span class="n">working</span><span class="err">
-</span><span class="err">#</span> <span class="n">directory.</span><span class="err">
-</span><span class="err"></span><span class="n">probe</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>  <span class="n">name</span><span class="o">:</span> <span class="s">&#34;redis_probe&#34;</span><span class="err">
-</span><span class="err"></span>  <span class="n">type</span><span class="o">:</span> <span class="n">EXTERNAL</span><span class="err">
-</span><span class="err"></span>  <span class="n">targets</span> <span class="p">{</span> <span class="n">dummy_targets</span> <span class="p">{}</span> <span class="p">}</span><span class="err">
-</span><span class="err"></span>  <span class="n">external_probe</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>    <span class="n">mode</span><span class="o">:</span> <span class="n">ONCE</span><span class="err">
-</span><span class="err"></span>    <span class="n">command</span><span class="o">:</span> <span class="s">&#34;./redis_probe&#34;</span><span class="err">
-</span><span class="err"></span>  <span class="p">}</span><span class="err">
-</span><span class="err"></span><span class="p">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Run an external probe that executes a command from the current working</span>
+<span class="c1"># directory.</span>
+probe <span class="o">{</span>
+  name: <span class="s2">&#34;redis_probe&#34;</span>
+  type: EXTERNAL
+  targets <span class="o">{</span> dummy_targets <span class="o">{}</span> <span class="o">}</span>
+  external_probe <span class="o">{</span>
+    mode: ONCE
+    command: <span class="s2">&#34;./redis_probe&#34;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
 
 <p>Running it through cloudprober, you&rsquo;ll see the following output:</p>
 
@@ -351,25 +352,25 @@ cloudprober <span class="m">1519</span>..4 <span class="m">1519583412</span> <sp
 
 <p>Full example in <a href="https://github.com/google/cloudprober/blob/master/examples/external/cloudprober_aggregate.cfg">examples/external/cloudprober_aggregate.cfg</a>.</p>
 
-<div class="highlight"><pre class="chroma"><code class="language-protobuf" data-lang="protobuf"><span class="err">#</span> <span class="n">Run</span> <span class="n">an</span> <span class="n">external</span> <span class="n">probe</span> <span class="n">and</span> <span class="n">aggregate</span> <span class="n">metrics</span> <span class="n">in</span> <span class="n">cloudprober.</span><span class="err">
-</span><span class="err"></span><span class="o">...</span><span class="err">
-</span><span class="err"></span><span class="n">output_metrics_options</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>  <span class="n">aggregate_in_cloudprober</span><span class="o">:</span> <span class="kc">true</span><span class="err">
-</span><span class="err">
-</span><span class="err"></span>  <span class="err">#</span> <span class="n">Create</span> <span class="n">distributions</span> <span class="n">for</span> <span class="n">get_latency_ms</span> <span class="n">and</span> <span class="n">set_latency_ms.</span><span class="err">
-</span><span class="err"></span>  <span class="n">dist_metric</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>    <span class="n">key</span><span class="o">:</span> <span class="s">&#34;get_latency_ms&#34;</span><span class="err">
-</span><span class="err"></span>    <span class="n">value</span><span class="o">:</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>      <span class="n">explicit_buckets</span><span class="o">:</span> <span class="s">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span class="err">
-</span><span class="err"></span>    <span class="p">}</span><span class="err">
-</span><span class="err"></span>  <span class="p">}</span><span class="err">
-</span><span class="err"></span>  <span class="n">dist_metric</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>    <span class="n">key</span><span class="o">:</span> <span class="s">&#34;set_latency_ms&#34;</span><span class="err">
-</span><span class="err"></span>    <span class="n">value</span><span class="o">:</span> <span class="p">{</span><span class="err">
-</span><span class="err"></span>      <span class="n">explicit_buckets</span><span class="o">:</span> <span class="s">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span><span class="err">
-</span><span class="err"></span>    <span class="p">}</span><span class="err">
-</span><span class="err"></span>  <span class="p">}</span><span class="err">
-</span><span class="err"></span><span class="p">}</span></code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Run an external probe and aggregate metrics in cloudprober.</span>
+...
+output_metrics_options <span class="o">{</span>
+  aggregate_in_cloudprober: <span class="nb">true</span>
+
+  <span class="c1"># Create distributions for get_latency_ms and set_latency_ms.</span>
+  dist_metric <span class="o">{</span>
+    key: <span class="s2">&#34;get_latency_ms&#34;</span>
+    value: <span class="o">{</span>
+      explicit_buckets: <span class="s2">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  dist_metric <span class="o">{</span>
+    key: <span class="s2">&#34;set_latency_ms&#34;</span>
+    value: <span class="o">{</span>
+      explicit_buckets: <span class="s2">&#34;0.1,0.2,0.4,0.6,0.8,1.0,2.0&#34;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
 
 <p>This configuration adds options to aggregate the metrics in the cloudprober and configures &ldquo;get_latency_ms&rdquo; and &ldquo;set_latency_ms&rdquo; as distribution metrics with explicit buckets. Cloudprober will now build cumulative distributions using
 for these metrics. We can import this data in Stackdriver or Prometheus and get the percentiles of the &ldquo;get&rdquo; and &ldquo;set&rdquo; latencies. Following screenshot shows the
